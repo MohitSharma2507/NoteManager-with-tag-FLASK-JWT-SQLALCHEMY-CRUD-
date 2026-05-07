@@ -71,8 +71,9 @@ def get_note(id):
 @jwt_required()
 def get_notes():
     user_id = int(get_jwt_identity())
-    data    = request.get_json()
 
+    print("JWT identity:", get_jwt_identity())
+ 
     search = request.args.get('search','')
     page = request.args.get('page',1,type=int)
     limit = request.args.get('limit',10,type=int)
@@ -88,10 +89,12 @@ def get_notes():
                Note.content.ilike(f"%{search}%"),
            )
         )
+        
     if tag:
         query = query.filter(Note.tags.any(Tag.name == tag))    
+
     if pinned:
-        pinned.lower() == 'true'
+       if pinned.lower() == 'true':
         query = query.filter_by(is_pinned=True)  
 
     query = query.order_by(Note.is_pinned.desc(), Note.updated_at.desc())          
@@ -166,6 +169,7 @@ def toggle_pin(id):
         return jsonify({"error":'Unauthorized'}),403
     
     note.is_pinned = not note.is_pinned
+    db.session.commit()
 
     status = 'Pinned' if note.is_pinned else 'Unpinned'
 
@@ -189,7 +193,7 @@ def delete_note(id):
             'error':'No Note Found'
         }),404
     
-    if note.user_id != user_id:
+    if note.user_id != int(user_id):
         return jsonify({
             'error':'Unauthorized'
         }),403
