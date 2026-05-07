@@ -12,9 +12,11 @@ class User(db.Model):
     id       = db.Column(db.Integer, primary_key=True)                    # removed unique=True
     email    = db.Column(db.String(200), unique=True, nullable=False)
     password = db.Column(db.String(256), nullable=False)
-
-    notes = db.relationship('Note', backref='author', lazy=True)          # backref='author'
-    tags  = db.relationship('Tag',  backref='owner',  lazy=True)          # backref='owner'
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+ # One-to-many: one user has many notes
+    notes = db.relationship('Note', backref='author', lazy=True , cascade='all, delete-orphan')          # backref='author'
+  # One-to-many: one user has many tags 
+    tags  = db.relationship('Tag',  backref='owner',  lazy=True, cascade='all, delete-orphan')          # backref='owner'
 
     def to_dict(self):
         return {
@@ -26,7 +28,8 @@ class User(db.Model):
 class Note(db.Model):
     id         = db.Column(db.Integer, primary_key=True)                  # removed unique=True
     title      = db.Column(db.String(100), nullable=False)
-    content    = db.Column(db.Text, nullable=True)                        # Text not String(250)
+    content    = db.Column(db.Text, nullable=True)
+    is_pinned  = db.Column(db.Boolean, default=False)                           # Text not String(250)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     user_id    = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
@@ -41,14 +44,19 @@ class Note(db.Model):
             'created_at': self.created_at.strftime('%d %b %Y %I:%M %p'), # formatted string
             'updated_at': self.updated_at.strftime('%d %b %Y %I:%M %p'), # formatted string
             'user_id':    self.user_id,
-            'tags':       [t.to_dict() for t in self.tags]
+            'tags':       [t.to_dict() for t in self.tags],
+            'is_pinned': self.is_pinned
         }
 
 
 class Tag(db.Model):
-    id      = db.Column(db.Integer, primary_key=True)                     # removed unique=True
+    id      = db.Column(db.Integer, primary_key=True)                    
     name    = db.Column(db.String(100), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
+ # Unique constraint — same user can't have two tags with the same name
+    __table_args__= (db.UniqueConstraint('name','user_id',name='unique_tag_per_user'),)
+
 
     def to_dict(self):
         return {

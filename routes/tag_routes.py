@@ -66,45 +66,6 @@ def get_tag(id):
     
     return jsonify({'tag':tag.to_dict()})
 
-@tag_bp.route('/attach_tag/<int:note_id>', methods=['POST'])
-@jwt_required()
-def attach_tag(note_id):
-
-    user_id = get_jwt_identity()
-
-    note = db.session.get(Note, note_id)
-    print(f"Note----> ${note}")
-
-    if not note:
-        return jsonify({'error':'No Note Found'}),404
-    
-    if note.user_id != int(user_id):
-        return jsonify({"error":'Unauthorized'}),403
-    
-    data = request.get_json()
-    if not data or 'tag_id' not in data:
-        return jsonify({'error':'Tag id is required'}),400
-    
-    tag = db.session.get(Tag, data['tag_id'])
-
-    if not tag:
-        return jsonify({'error': 'Tag not found'}), 404
-    
-    if tag.user_id != int(user_id):
-        return jsonify({"error":'Unauthorized'}),403
-    
-    if tag in note.tags:
-        return jsonify({'error':'Tag already attached to this note'}),409
-    
-    note.tags.append(tag)
-
-    db.session.commit()
-
-    return jsonify({
-        'message':'Tag attached successfully',
-        'note':note.to_dict()
-    })
-
 @tag_bp.route('/remove_tag/<int:note_id>', methods=['POST'])
 @jwt_required()
 def remove_tag(note_id):
