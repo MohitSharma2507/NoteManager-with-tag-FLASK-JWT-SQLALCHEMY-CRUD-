@@ -63,7 +63,7 @@ def get_note(id):
     if note.user_id != int(user_id):
         return jsonify({'error':'Unauthorized'}),403
     
-    return jsonify({'note':note.to_dict}),200
+    return jsonify({'note':note.to_dict()}),200
 
 # ── GET ALL NOTES (with search + pagination) ──────────────────────────────────
 
@@ -124,7 +124,7 @@ def update_note(id):
     if note.user_id != user_id:
         return jsonify({"error":'Unauthorized'}),403
     
-    data = request.json()
+    data = request.get_json()
 
     if not data:
         return jsonify({'error':'No data found'}),404
