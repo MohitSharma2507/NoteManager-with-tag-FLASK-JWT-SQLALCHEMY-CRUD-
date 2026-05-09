@@ -10,18 +10,21 @@ import logging
 
 logging.basicConfig(level=logging.INFO)
 
-def createAapp():
+def createAapp(config_class=None):
      
      app = Flask(__name__)
+
+     if config_class:
+        app.config.from_object(config_class)
+     else:
   # 🔐 Config (env-based with fallback)
-     app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
-        "DATABASE_URL", "sqlite:///notes.db"
-    )
-     
-     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # saves memory
-     app.config['JWT_SECRET_KEY'] = os.environ.get(
-        "JWT_SECRET_KEY", "dev-secret"
-     )
+          app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
+          "DATABASE_URL", "sqlite:///notes.db")
+          
+          app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # saves memory
+          app.config['JWT_SECRET_KEY'] = os.environ.get(
+          "JWT_SECRET_KEY", "dev-secret"
+          )
      app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(days=7)
 
      db.init_app(app)
@@ -34,8 +37,8 @@ def createAapp():
      @app.errorhandler(404)
      def not_found(e):
           return jsonify({'error':'Endpoint not found'}),404
-      
-     # 🛢️ Create tables
+          
+          # 🛢️ Create tables
      with app.app_context():
           db.create_all()
 

@@ -2,16 +2,14 @@ import pytest
 from app import createAapp, db
 from config import TestingConfig
 
-
 @pytest.fixture
 def app():
     app = createAapp(TestingConfig)
-
+    
     with app.app_context():
         db.create_all()
         yield app
         db.drop_all()
-
 
 @pytest.fixture
 def client(app):
