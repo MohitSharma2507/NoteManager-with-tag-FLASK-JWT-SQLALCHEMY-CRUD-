@@ -6,6 +6,10 @@ from routes.notes_routes import note_bp
 from routes.tag_routes import tag_bp
 from datetime import timedelta
 import os
+import logging
+
+logging.basicConfig(level=logging.INFO)
+
 def createAapp():
      
      app = Flask(__name__)

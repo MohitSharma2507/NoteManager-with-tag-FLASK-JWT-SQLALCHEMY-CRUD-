@@ -2,6 +2,9 @@ from flask import Blueprint,session,request,jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity,create_access_token
 from werkzeug.security import generate_password_hash,check_password_hash
 from models import User,db
+import logging
+
+logger = logging.getLogger(__name__)
 
 auth_bp = Blueprint('auth',__name__)
 
@@ -27,6 +30,7 @@ def login():
     
     access_token = create_access_token(identity=str(user.id))
     
+    logger.info(f"Get Signup Info: {user}")
     return jsonify({
         'message':'Login Successful',
         'access_token':access_token,

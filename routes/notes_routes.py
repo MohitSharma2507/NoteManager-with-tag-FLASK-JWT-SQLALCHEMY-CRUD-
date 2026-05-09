@@ -1,6 +1,9 @@
 from flask import Blueprint,session,jsonify,request
 from flask_jwt_extended import jwt_required,get_jwt_identity
 from models import db,Note,Tag
+import logging
+
+logger = logging.getLogger(__name__)
 
 note_bp = Blueprint('notes',__name__)
 
@@ -39,7 +42,7 @@ def add_note():
 
     db.session.add(note)    
     db.session.commit()
-
+    
     return jsonify({
         'message':'Note Created',
         'note':note.to_dict()
@@ -100,6 +103,11 @@ def get_notes():
     query = query.order_by(Note.is_pinned.desc(), Note.updated_at.desc())          
 
     paginated = query.paginate(page=page,per_page=limit,error_out=False)
+    
+    response = {
+        "notes": [n.to_dict() for n in paginated.items]
+    }
+    logger.info(f"Get Notes Response -----> {response}")
 
     return jsonify({
         'notes':[n.to_dict() for n in paginated.items],
