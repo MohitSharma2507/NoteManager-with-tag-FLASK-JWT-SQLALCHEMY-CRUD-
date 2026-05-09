@@ -48,7 +48,6 @@ class Note(db.Model):
             'is_pinned': self.is_pinned
         }
 
-
 class Tag(db.Model):
     id      = db.Column(db.Integer, primary_key=True)                    
     name    = db.Column(db.String(100), nullable=False)
