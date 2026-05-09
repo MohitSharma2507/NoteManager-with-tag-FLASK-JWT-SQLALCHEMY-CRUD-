@@ -35,7 +35,7 @@ def add_tag():
     return jsonify({
         'message':'Tag Added',
         'tag':tag.to_dict()
-    }),200
+    }),201
 
 @tag_bp.route('/get_tags', methods=['GET'])
 @jwt_required()
@@ -103,7 +103,7 @@ def remove_tag(note_id):
     return jsonify({
         'message': 'Tag removed successfully',
         'note': note.to_dict()
-    }), 200
+    }), 201
 
 @tag_bp.route('/by_tag/<int:tag_id>', methods=['GET'])
 @jwt_required()

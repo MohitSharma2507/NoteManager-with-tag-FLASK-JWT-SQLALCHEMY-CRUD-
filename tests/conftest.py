@@ -10,6 +10,8 @@ from app import createAapp,db
 # db.create_all() creates all tables before the test. yield app gives the app to the test — 
 # the test runs here. db.drop_all() deletes everything after the test. So every test starts clean.
 
+# 👉 Before yield → setup
+# 👉 After yield → teardown
 @pytest.fixture
 def app():
     app = createAapp()
@@ -19,7 +21,8 @@ def app():
     
     with app.app_context():
         db.create_all()
-        yield app
+        
+        yield app  # Pauses here and returns app to client
         db.drop_all()
 
 
@@ -41,4 +44,4 @@ def auth_headers(client):
 
 @pytest.fixture
 def client(app):
-    return app.test_client()
+    return app.test_client() #method of Flaskapp, creates test env/fake server to use method like client.get, client.posy eyc.

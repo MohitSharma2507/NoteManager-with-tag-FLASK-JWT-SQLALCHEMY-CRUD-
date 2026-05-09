@@ -1,6 +1,5 @@
 import pytest
 
-
 @pytest.mark.order(5)
 def test_get_notes(client, auth_headers):
 

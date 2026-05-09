@@ -1,6 +1,5 @@
 import pytest
 
-
 @pytest.mark.order(7)
 def test_toggle_pin(client, auth_headers):
 
@@ -15,7 +14,7 @@ def test_toggle_pin(client, auth_headers):
         f"/api/notes/{note_id}/pin",
         headers=auth_headers
     )
-
+    
     data = response.get_json()
 
     assert response.status_code == 200

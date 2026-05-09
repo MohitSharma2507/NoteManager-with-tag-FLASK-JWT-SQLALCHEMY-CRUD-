@@ -1,6 +1,6 @@
 import pytest
 
-@pytest.mark.order(10)
+@pytest.mark.order(14)
 def test_delete_note(client, auth_headers):
 
     create = client.post("/api/notes/add_note", json={
